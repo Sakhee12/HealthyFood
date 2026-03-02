@@ -1,98 +1,143 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { CategoryTabs } from '@/components/CategoryTabs';
+import { HomeScreenHeader } from '@/components/HomeScreenHeader';
+import { OffersBanner } from '@/components/OffersBanner';
+import { ProductCard } from '@/components/ProductCard';
+import { Colors } from '@/constants/theme';
+import { StatusBar } from 'expo-status-bar';
+import React, { useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+const CATEGORIES = ['All', 'Holi', 'Ramzan', 'Kids', 'Gifting', 'Imported', 'Kuch Bhi'];
+
+const PRODUCTS = [
+  { id: '1', name: 'Organic Honey', weight: '500g', price: '₹450', image: '🍯', rating: 4.8 },
+  { id: '2', name: 'Fresh Avocado', weight: '2 pcs', price: '₹220', image: '🥑', rating: 4.5 },
+  { id: '3', name: 'Almond Milk', weight: '1L', price: '₹180', image: '🥛', rating: 4.7 },
+  { id: '4', name: 'Quinoa Seeds', weight: '1kg', price: '₹550', image: '🍚', rating: 4.9 },
+  { id: '5', name: 'Greek Yogurt', weight: '200g', price: '₹80', image: '🍦', rating: 4.6 },
+];
+
+const DAILY_ESSENTIALS = [
+  { id: '6', name: 'Fresh Spinach', weight: '250g', price: '₹40', image: '🥬', rating: 4.4 },
+  { id: '7', name: 'Brown Eggs', weight: '6 pcs', price: '₹95', image: '🥚', rating: 4.8 },
+  { id: '8', name: 'Oats Pack', weight: '500g', price: '₹120', image: '🥣', rating: 4.5 },
+];
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [refreshing, setRefreshing] = useState(false);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 2000);
+  }, []);
+
+  const getGradientColors = () => {
+    switch (activeCategory.toLowerCase()) {
+      case 'holi': return Colors.gradients.holi;
+      case 'ramzan': return Colors.gradients.ramzan;
+      case 'kids': return Colors.gradients.kids;
+      case 'gifting': return Colors.gradients.gifting;
+      case 'imported': return Colors.gradients.imported;
+      case 'kuch bhi': return Colors.gradients.kuchBhi;
+      default: return Colors.gradients.all;
+    }
+  };
+
+  const currentGradient = getGradientColors();
+
+  return (
+    <View style={styles.container}>
+      <StatusBar style="dark" />
+      <HomeScreenHeader activeCategory={activeCategory} />
+
+      <ScrollView
+        stickyHeaderIndices={[0]}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.healthy.primary} />
+        }
+      >
+        {/* Sticky Tabs Section */}
+        <View style={[styles.stickyHeader, { backgroundColor: currentGradient[0] }]}>
+          <CategoryTabs
+            categories={CATEGORIES}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+          />
+        </View>
+
+        {/* Dynamic Background Area */}
+        <View style={{ backgroundColor: currentGradient[currentGradient.length - 1] }}>
+          {/* Offers Section */}
+          <OffersBanner category={activeCategory} />
+
+          {/* Healthy Picks Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Healthy Picks</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productRow}>
+              {PRODUCTS.map(product => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Daily Essentials Section */}
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Daily Essentials</Text>
+              <Text style={styles.seeAll}>See All</Text>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.productRow}>
+              {DAILY_ESSENTIALS.map(product => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Bottom Spacer */}
+          <View style={{ height: 100 }} />
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+    backgroundColor: Colors.healthy.white,
+  },
+  stickyHeader: {
+    backgroundColor: Colors.healthy.primary,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 8,
+    paddingHorizontal: 16,
+    marginBottom: 12,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#333',
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  seeAll: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.healthy.primary,
+  },
+  productRow: {
+    paddingHorizontal: 16,
+    paddingBottom: 4,
   },
 });

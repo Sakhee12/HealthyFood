@@ -25,6 +25,27 @@ export const Colors = {
     tabIconDefault: '#9BA1A6',
     tabIconSelected: tintColorDark,
   },
+  healthy: {
+    primary: '#CC338B', // Deep Magenta
+    primaryDark: '#8B008B',
+    accentRed: '#B91428', // Goji Berry Red
+    yellow: '#FFD700', // Vibrant Yellow
+    white: '#FFFFFF',
+    cream: '#FFF1E6', // Softer cream
+    cardBackground: '#FAFAFA',
+    mutedText: '#FFF6E5',
+    textPrimary: '#FFFFFF',
+    successGreen: '#1C8B39',
+  },
+  gradients: {
+    all: ['#FFD100', '#FFB700'], // Default All - Gold/Yellow gradient like Blinkit default sometimes
+    holi: ['#FF1493', '#FFD700', '#00CED1'],
+    ramzan: ['#E0F2E9', '#F0F9F4'], // Soft green from image
+    kids: ['#E3F2FD', '#BBDEFB'], // Soft blue from image
+    imported: ['#F5F0E1', '#E8DFCC'], // Soft tan/premium from image
+    gifting: ['#FFF8E1', '#FFECB3'],
+    kuchBhi: ['#CC338B', '#8B008B'], // Keeping magenta here
+  },
 };
 
 export const Fonts = Platform.select({
